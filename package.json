@@ -1,0 +1,15 @@
+{
+    "name": "cf-analytics-worker",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "build": "tsc",
+        "deploy": "wrangler deploy"
+    },
+    "devDependencies": {
+        "@cloudflare/workers-types": "^4.2025.0",
+        "itty-router": "^3.0.7",
+        "prettier": "^3.6.2",
+        "typescript": "^4.9.5"
+    }
+}

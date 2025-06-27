@@ -1,0 +1,8 @@
+name = "cf-analytics-worker"
+main = "src/index.ts"
+compatibility_date = "2025-06-27"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "analytics_db"
+database_id = "42be7e47-0596-4f4d-86c3-aa7eaf1d533e"
