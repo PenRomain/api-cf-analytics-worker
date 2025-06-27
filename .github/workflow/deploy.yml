@@ -17,7 +17,7 @@ jobs:
       - name: Build
         run: npm run build
       - name: Publish to Cloudflare Workers
-        uses: cloudflare/wrangler-action@2
+        uses: cloudflare/wrangler-action@1
         with:
           apiToken: ${{ secrets.CF_ANALYTICS_WORKER_TOKEN }}
           workingDirectory: ./
