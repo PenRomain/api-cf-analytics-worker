@@ -1,7 +1,7 @@
 name: CI/CD Pipeline
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -10,14 +10,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "22"
-          cache: "npm"
+          node-version: '16'
+          cache: 'npm'
       - name: Install dependencies
         run: npm ci
       - name: Build
         run: npm run build
       - name: Publish to Cloudflare Workers
-        uses: cloudflare/wrangler-action@1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_ANALYTICS_WORKER_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        with:
+          apiToken: ${{ secrets.CF_ANALYTICS_WORKER_TOKEN }} 
           workingDirectory: ./
