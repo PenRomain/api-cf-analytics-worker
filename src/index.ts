@@ -149,6 +149,7 @@ export default {
     ctx: ExecutionContext,
   ): Promise<Response> {
     const url = new URL(request.url);
+
     if (
       url.pathname.startsWith("/events") ||
       url.pathname.startsWith("/metrics")
@@ -156,25 +157,14 @@ export default {
       return router.handle(request, env, ctx);
     }
 
-    try {
-      return await getAssetFromKV(
-        { request, waitUntil: ctx.waitUntil },
-
-        {
-          ASSET_NAMESPACE:
-            process.env.KV_NAMESPACE_BINDING ??
-            "__cf-analytics-worker-workers_sites_assets",
-        },
-      );
-    } catch {
+    let asset = await env.__STATIC_CONTENT.fetch(request);
+    if (asset.status === 404) {
       const indexReq = new Request(
-        new URL("/index.html", request.url).toString(),
+        new URL("/index.html", request.url).href,
         request,
       );
-      return await getAssetFromKV({
-        request: indexReq,
-        waitUntil: ctx.waitUntil,
-      });
+      asset = await env.__STATIC_CONTENT.fetch(indexReq);
     }
+    return asset;
   },
 };
