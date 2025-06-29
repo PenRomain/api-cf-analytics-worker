@@ -78,9 +78,7 @@ router.get("/", async (request, env: Env) => {
       "SELECT COUNT(*) AS count FROM reached_last_scene",
     ).all();
     return new Response(
-
-        JSON.stringify({ newUsers, paidClicks, reachedLastScene }, null, 2),
-      ,
+      JSON.stringify({ newUsers, paidClicks, reachedLastScene }, null, 2),
       {
         headers: {
           "content-type": "text/html",
