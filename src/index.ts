@@ -1,5 +1,7 @@
 import { IRequest, Router } from "itty-router";
 import { renderHtml } from "./renderHtml";
+import type { Env } from "./types";
+import { ExecutionContext } from "@cloudflare/workers-types";
 
 const router = Router();
 
@@ -84,8 +86,10 @@ router.get("/metrics/paid-clicks", async (request: IRequest, env: Env) => {
   const { results } = await env.DB.prepare(
     "SELECT COUNT(*) AS count FROM paid_clicks",
   ).all();
-  return new Response(JSON.stringify({ paidClicks: results[0].count }), {
-    headers: { "Content-Type": "application/json", ...corsHeaders },
+  return new Response(renderHtml(JSON.stringify(results, null, 2)), {
+    headers: {
+      "content-type": "text/html",
+    },
   });
 });
 
@@ -93,8 +97,10 @@ router.get("/metrics/last-scene", async (request: IRequest, env: Env) => {
   const { results } = await env.DB.prepare(
     "SELECT COUNT(*) AS count FROM reached_last_scene",
   ).all();
-  return new Response(JSON.stringify({ lastSceneUsers: results[0].count }), {
-    headers: { "Content-Type": "application/json", ...corsHeaders },
+  return new Response(renderHtml(JSON.stringify(results, null, 2)), {
+    headers: {
+      "content-type": "text/html",
+    },
   });
 });
 
@@ -107,20 +113,3 @@ export default {
     return router.handle(request, env, ctx);
   },
 };
-
-// import { ExportedHandler } from "@cloudflare/workers-types";
-// import { Env } from "./types";
-// import { renderHtml } from "./renderHtml";
-
-// export default {
-//   async fetch(request, env) {
-//     const stmt = env.DB.prepare("SELECT * FROM comments LIMIT 3");
-//     const { results } = await stmt.all();
-
-//     return new Response(renderHtml(JSON.stringify(results, null, 2)), {
-//       headers: {
-//         "content-type": "text/html",
-//       },
-//     });
-//   },
-// } satisfies ExportedHandler<Env>;
