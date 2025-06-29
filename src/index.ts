@@ -67,41 +67,30 @@ router.post("/events/last-scene", async (request: IRequest, env: Env) => {
   }
 });
 
-router.get("/metrics/users", async (request, env: Env) => {
+router.get("/", async (request, env: Env) => {
   try {
-    const { results } = await env.DB.prepare(
+    const { results: newUsers } = await env.DB.prepare(
       "SELECT COUNT(*) AS count FROM new_users",
     ).all();
-    return new Response(renderHtml(JSON.stringify(results, null, 2)), {
-      headers: {
-        "content-type": "text/html",
+    const { results: paidClicks } = await env.DB.prepare(
+      "SELECT COUNT(*) AS count FROM paid_clicks",
+    ).all();
+    const { results: reachedLastScene } = await env.DB.prepare(
+      "SELECT COUNT(*) AS count FROM reached_last_scene",
+    ).all();
+    return new Response(
+      renderHtml(
+        JSON.stringify({ newUsers, paidClicks, reachedLastScene }, null, 2),
+      ),
+      {
+        headers: {
+          "content-type": "text/html",
+        },
       },
-    });
+    );
   } catch (e) {
     return new Response(JSON.stringify(e), { status: 500 });
   }
-});
-
-router.get("/metrics/paid-clicks", async (request: IRequest, env: Env) => {
-  const { results } = await env.DB.prepare(
-    "SELECT COUNT(*) AS count FROM paid_clicks",
-  ).all();
-  return new Response(renderHtml(JSON.stringify(results, null, 2)), {
-    headers: {
-      "content-type": "text/html",
-    },
-  });
-});
-
-router.get("/metrics/last-scene", async (request: IRequest, env: Env) => {
-  const { results } = await env.DB.prepare(
-    "SELECT COUNT(*) AS count FROM reached_last_scene",
-  ).all();
-  return new Response(renderHtml(JSON.stringify(results, null, 2)), {
-    headers: {
-      "content-type": "text/html",
-    },
-  });
 });
 
 export default {
