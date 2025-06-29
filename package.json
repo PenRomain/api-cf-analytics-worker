@@ -11,7 +11,8 @@
         "predeploy": "wrangler d1 migrations apply analytics_db",
         "seedLocalD1": "wrangler d1 migrations apply analytics_db --local",
         "check": "tsc && wrangler deploy --dry-run",
-        "deploy": "npm run predeploy && wrangler deploy"
+        "deploy": "npm run predeploy && wrangler deploy",
+        "format": "prettier -w \"src/**/*.{ts,tsx,css,md,json}\""
     },
     "dependencies": {
         "axios": "^1.0.0",
