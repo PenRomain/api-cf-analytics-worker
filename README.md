@@ -144,6 +144,4 @@ wrangler dev --local --env dev
 - [Cloudflare D1 Docs](https://developers.cloudflare.com/d1/)
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler)
 
----
-
 <div align="center">🚀 Удачи с аналитикой! 🎮</div>
