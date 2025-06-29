@@ -142,48 +142,6 @@ router.get("/metrics/last_scenes", async (request, env: Env) => {
   }
 });
 
-// export default {
-//   async fetch(
-//     request: Request,
-//     env: Env,
-//     ctx: ExecutionContext,
-//   ): Promise<Response> {
-//     const url = new URL(request.url);
-
-//     if (
-//       url.pathname.startsWith("/events") ||
-//       url.pathname.startsWith("/metrics")
-//     ) {
-//       return router.handle(request, env, ctx);
-//     }
-
-//     const resp = await getAssetFromKV(
-//       { request, waitUntil: ctx.waitUntil },
-//       { ASSET_NAMESPACE: env.ASSET_NAMESPACE },
-//     );
-//     console.log("%csrc/index.ts:164 resp", "color: #007acc;", resp);
-//     return resp;
-
-//     //   let resp = await env.ASSET_NAMESPACE.get("index.html")
-
-//     //   // const value = await env.NAMESPACE.get("first-key");
-
-//     //   // const values = await env.NAMESPACE.get(["first-key", "second-key"]);
-
-//     //   // const valueWithMetadata = await env.NAMESPACE.getWithMetadata("first-key");
-//     //   // const valuesWithMetadata = await env.NAMESPACE.getWithMetadata(["first-key", "second-key"]);
-//     //   if (resp) {
-//     //     const indexReq = new Request(
-//     //       new URL("/index.html", request.url).href,
-//     //       request,
-//     //     );
-//     //     // @ts-ignore
-//     //     resp = await env.ASSETS.fetch?.(indexReq);
-//     //   }
-//     //   return resp;
-//   },
-// };
-
 export default {
   async fetch(
     request: Request,
@@ -199,25 +157,32 @@ export default {
       return router.handle(request, env, ctx);
     }
 
-    try {
-      const html = await env.ASSET_NAMESPACE.get("index.2256710da6.html");
-      console.log("%csrc/index.ts:204 html", "color: #007acc;", html);
-      return new Response(html, {
-        headers: {
-          "content-type": "text/html;charset=UTF-8",
-          ...corsHeaders,
-        },
-      });
-    } catch {
-      const indexReq = new Request(
-        new URL("/index.html", request.url).href,
-        request,
-      );
+    let key =
+      url.pathname === "/" ? "index.2256710da6.html" : url.pathname.slice(1);
 
-      return await getAssetFromKV(
-        { request: indexReq, waitUntil: ctx.waitUntil },
-        { ASSET_NAMESPACE: env["ASSET_NAMESPACE"] },
-      );
+    const asset = await env.ASSET_NAMESPACE.get(key, { type: "arrayBuffer" });
+    if (asset) {
+      const ext = key.split(".").pop()!.toLowerCase();
+      const mimes: Record<string, string> = {
+        html: "text/html; charset=utf-8",
+        js: "application/javascript",
+        css: "text/css",
+        png: "image/png",
+        jpg: "image/jpeg",
+        svg: "image/svg+xml",
+        json: "application/json",
+      };
+      const contentType = mimes[ext] || "application/octet-stream";
+      return new Response(asset, {
+        headers: { "Content-Type": contentType, ...corsHeaders },
+      });
     }
+
+    const fallback = await env.ASSET_NAMESPACE.get("index.2256710da6.html", {
+      type: "arrayBuffer",
+    });
+    return new Response(fallback!, {
+      headers: { "Content-Type": "text/html; charset=utf-8", ...corsHeaders },
+    });
   },
 };
