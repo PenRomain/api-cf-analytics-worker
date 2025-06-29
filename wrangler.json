@@ -1,8 +1,7 @@
 {
   "compatibility_date": "2025-06-27",
-  "main": "index.html",
+  "main": "src/index.ts",
   "name": "cf-analytics-worker",
-  "type": "webpack",
   "upload_source_maps": true,
   "d1_databases": [
     {
