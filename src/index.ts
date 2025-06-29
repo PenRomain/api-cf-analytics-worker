@@ -200,10 +200,14 @@ export default {
     }
 
     try {
-      return await getAssetFromKV(
-        { request, waitUntil: ctx.waitUntil },
-        { ASSET_NAMESPACE: env["ASSET_NAMESPACE"] },
-      );
+      const html = await env.ASSET_NAMESPACE.get("index.2256710da6.html");
+      console.log("%csrc/index.ts:204 html", "color: #007acc;", html);
+      return new Response(html, {
+        headers: {
+          "content-type": "text/html;charset=UTF-8",
+          ...corsHeaders,
+        },
+      });
     } catch {
       const indexReq = new Request(
         new URL("/index.html", request.url).href,
