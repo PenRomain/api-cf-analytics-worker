@@ -10,6 +10,13 @@
       "database_name": "analytics_db"
     }
   ],
+  "site": {
+    "bucket": "./dist",
+    "include": [
+      "index.html",
+      "src/**/*"
+    ]
+  },
   "observability": {
     "enabled": true
   }

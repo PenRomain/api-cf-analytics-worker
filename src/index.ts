@@ -1,5 +1,4 @@
 import { IRequest, Router } from "itty-router";
-import { renderHtml } from "./renderHtml";
 import type { Env } from "./types";
 import { ExecutionContext } from "@cloudflare/workers-types";
 
@@ -79,9 +78,9 @@ router.get("/", async (request, env: Env) => {
       "SELECT COUNT(*) AS count FROM reached_last_scene",
     ).all();
     return new Response(
-      renderHtml(
+
         JSON.stringify({ newUsers, paidClicks, reachedLastScene }, null, 2),
-      ),
+      ,
       {
         headers: {
           "content-type": "text/html",
@@ -116,12 +115,16 @@ router.get("/metrics/users/:userId", async (request, env: Env) => {
 router.get("/metrics/users", async (request, env: Env) => {
   try {
     const { results } = await env.DB.prepare("SELECT * FROM new_users").all();
-    return new Response(renderHtml(JSON.stringify({ results }, null, 2)), {
+    return new Response(JSON.stringify({ results }, null, 2), {
       headers: {
-        "content-type": "text/html",
+        "content-type": "application/json",
+        ...corsHeaders,
       },
     });
   } catch (e) {
+    if (e instanceof Error) {
+      console.error("Users error:", e.message);
+    }
     return new Response(JSON.stringify(e), { status: 500 });
   }
 });
@@ -129,12 +132,18 @@ router.get("/metrics/users", async (request, env: Env) => {
 router.get("/metrics/paid_clicks", async (request, env: Env) => {
   try {
     const { results } = await env.DB.prepare("SELECT * FROM paid_clicks").all();
-    return new Response(renderHtml(JSON.stringify({ results }, null, 2)), {
+
+    return new Response(JSON.stringify({ results }, null, 2), {
+      status: 200,
       headers: {
-        "content-type": "text/html",
+        "Content-Type": "application/json",
+        ...corsHeaders,
       },
     });
   } catch (e) {
+    if (e instanceof Error) {
+      console.error("Paid-clicks error:", e.message);
+    }
     return new Response(JSON.stringify(e), { status: 500 });
   }
 });
@@ -144,12 +153,16 @@ router.get("/metrics/last_scenes", async (request, env: Env) => {
     const { results } = await env.DB.prepare(
       "SELECT * FROM reached_last_scene",
     ).all();
-    return new Response(renderHtml(JSON.stringify({ results }, null, 2)), {
+    return new Response(JSON.stringify({ results }, null, 2), {
       headers: {
-        "content-type": "text/html",
+        "content-type": "application/json",
+        ...corsHeaders,
       },
     });
   } catch (e) {
+    if (e instanceof Error) {
+      console.error("Last-scene error:", e.message);
+    }
     return new Response(JSON.stringify(e), { status: 500 });
   }
 });
