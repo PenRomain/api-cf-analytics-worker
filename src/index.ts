@@ -149,40 +149,6 @@ export default {
     ctx: ExecutionContext,
   ): Promise<Response> {
     const url = new URL(request.url);
-
-    if (
-      url.pathname.startsWith("/events") ||
-      url.pathname.startsWith("/metrics")
-    ) {
-      return router.handle(request, env, ctx);
-    }
-
-    let key =
-      url.pathname === "/" ? "index.2256710da6.html" : url.pathname.slice(1);
-
-    const asset = await env.ASSET_NAMESPACE.get(key, { type: "arrayBuffer" });
-    if (asset) {
-      const ext = key.split(".").pop()!.toLowerCase();
-      const mimes: Record<string, string> = {
-        html: "text/html; charset=utf-8",
-        js: "application/javascript",
-        css: "text/css",
-        png: "image/png",
-        jpg: "image/jpeg",
-        svg: "image/svg+xml",
-        json: "application/json",
-      };
-      const contentType = mimes[ext] || "application/octet-stream";
-      return new Response(asset, {
-        headers: { "Content-Type": contentType, ...corsHeaders },
-      });
-    }
-
-    const fallback = await env.ASSET_NAMESPACE.get("index.2256710da6.html", {
-      type: "arrayBuffer",
-    });
-    return new Response(fallback!, {
-      headers: { "Content-Type": "text/html; charset=utf-8", ...corsHeaders },
-    });
+    return router.handle(request, env, ctx);
   },
 };

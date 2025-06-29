@@ -1,13 +1,10 @@
 {
-    "name": "cf-analytics-worker",
+    "name": "api-cf-analytics-worker",
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "build": "npm run build:ui && npm run build:worker",
-        "build:ui": "vite build",
-        "build:worker": "tsc -p tsconfig.json",
-        "dev": "vite dev --host & wrangler dev",
-        "preview": "vite preview",
+        "build": "tsc -p tsconfig.json",
+        "dev": "wrangler dev",
         "predeploy": "wrangler d1 migrations apply analytics_db",
         "seedLocalD1": "wrangler d1 migrations apply analytics_db --local",
         "check": "tsc && wrangler deploy --dry-run",
@@ -15,22 +12,13 @@
         "format": "prettier -w \"src/**/*.{ts,tsx,css,md,json}\""
     },
     "dependencies": {
-        "@cloudflare/kv-asset-handler": "^0.4.0",
-        "axios": "^1.0.0",
-        "react": "^18.0.0",
-        "react-dom": "^18.0.0",
-        "recharts": "^2.1.9"
+        "@cloudflare/kv-asset-handler": "^0.4.0"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.2025.0",
-        "@types/node": "^24.0.7",
-        "@types/react": "^19.1.8",
-        "@types/react-dom": "^19.1.6",
-        "@vitejs/plugin-react": "^3.0.0",
         "itty-router": "^3.0.7",
         "prettier": "^3.6.2",
         "typescript": "^4.9.5",
-        "vite": "^4.0.0",
         "wrangler": "^4.22.0"
     }
 }
