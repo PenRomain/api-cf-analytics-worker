@@ -31,7 +31,7 @@ router.post("/events/user", async (request: IRequest, env: Env) => {
   }
 });
 
-router.post("/events/paid-clicks", async (request: IRequest, env: Env) => {
+router.post("/events/paid-click", async (request: IRequest, env: Env) => {
   try {
     const { userId, ts } = await request.json();
     if (!userId || !ts)
