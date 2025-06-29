@@ -21,5 +21,11 @@
   },
   "observability": {
     "enabled": true
+  },
+  "kv_namespaces": [
+  {
+    "binding": "__cf-analytics-worker-workers_sites_assets", 
+    "id": "43493e5125fd4b92a53832fc84ca9a6c" 
   }
+]
 }

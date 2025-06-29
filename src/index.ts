@@ -1,6 +1,7 @@
 import { IRequest, Router } from "itty-router";
 import type { Env } from "./types";
 import { ExecutionContext } from "@cloudflare/workers-types";
+import { getAssetFromKV } from "@cloudflare/kv-asset-handler";
 
 const router = Router();
 
@@ -154,21 +155,26 @@ export default {
     ) {
       return router.handle(request, env, ctx);
     }
+
     try {
-      // @ts-ignore
-      return await getAssetFromKV({ request, env, ctx });
-    } catch (e) {
-      return new Response("Not found", { status: 404 });
+      return await getAssetFromKV(
+        { request, waitUntil: ctx.waitUntil },
+
+        {
+          ASSET_NAMESPACE:
+            process.env.KV_NAMESPACE_BINDING ??
+            "__cf-analytics-worker-workers_sites_assets",
+        },
+      );
+    } catch {
+      const indexReq = new Request(
+        new URL("/index.html", request.url).toString(),
+        request,
+      );
+      return await getAssetFromKV({
+        request: indexReq,
+        waitUntil: ctx.waitUntil,
+      });
     }
   },
 };
-
-// export default {
-//   async fetch(
-//     request: IRequest,
-//     env: Env,
-//     ctx: ExecutionContext,
-//   ): Promise<Response> {
-//     return router.handle(request, env, ctx);
-//   },
-// };

@@ -15,6 +15,7 @@
         "format": "prettier -w \"src/**/*.{ts,tsx,css,md,json}\""
     },
     "dependencies": {
+        "@cloudflare/kv-asset-handler": "^0.4.0",
         "axios": "^1.0.0",
         "react": "^18.0.0",
         "react-dom": "^18.0.0",
