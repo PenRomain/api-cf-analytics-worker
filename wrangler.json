@@ -1,6 +1,6 @@
 {
   "compatibility_date": "2025-06-27",
-  "main": "src/index.ts",
+  "main": "index.html",
   "name": "cf-analytics-worker",
   "type": "webpack",
   "upload_source_maps": true,
@@ -16,7 +16,6 @@
   },
   "site": {
     "bucket": "./dist",
-    "entry-point": "workers_site",
     "include": [
       "index.html"
     ]
