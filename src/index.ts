@@ -157,14 +157,29 @@ export default {
       return router.handle(request, env, ctx);
     }
 
-    let asset = await env.__STATIC_CONTENT.fetch(request);
-    if (asset.status === 404) {
-      const indexReq = new Request(
-        new URL("/index.html", request.url).href,
-        request,
-      );
-      asset = await env.__STATIC_CONTENT.fetch(indexReq);
-    }
-    return asset;
+    const resp = await getAssetFromKV(
+      { request, waitUntil: ctx.waitUntil },
+      { ASSET_NAMESPACE: env.ASSET_NAMESPACE },
+    );
+    console.log("%csrc/index.ts:164 resp", "color: #007acc;", resp);
+    return resp;
+
+    //   let resp = await env.ASSET_NAMESPACE.get("index.html")
+
+    //   // const value = await env.NAMESPACE.get("first-key");
+
+    //   // const values = await env.NAMESPACE.get(["first-key", "second-key"]);
+
+    //   // const valueWithMetadata = await env.NAMESPACE.getWithMetadata("first-key");
+    //   // const valuesWithMetadata = await env.NAMESPACE.getWithMetadata(["first-key", "second-key"]);
+    //   if (resp) {
+    //     const indexReq = new Request(
+    //       new URL("/index.html", request.url).href,
+    //       request,
+    //     );
+    //     // @ts-ignore
+    //     resp = await env.ASSETS.fetch?.(indexReq);
+    //   }
+    //   return resp;
   },
 };

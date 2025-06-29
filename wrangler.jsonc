@@ -24,8 +24,8 @@
   },
   "kv_namespaces": [
   {
-    "binding": "_STATIC_CONTENT", 
-    "id": "67ae3aba99c54cc3b646d760ceb70932" 
+    "binding": "KV_ANALYTICS", 
+    "id": "fcaa57ca66f94a549bade6c6ed499f57" 
   }
 ]
 }
