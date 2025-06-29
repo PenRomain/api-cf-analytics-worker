@@ -113,6 +113,47 @@ router.get("/metrics/users/:userId", async (request, env: Env) => {
   }
 });
 
+router.get("/metrics/users", async (request, env: Env) => {
+  try {
+    const { results } = await env.DB.prepare("SELECT * FROM new_users").all();
+    return new Response(renderHtml(JSON.stringify({ results }, null, 2)), {
+      headers: {
+        "content-type": "text/html",
+      },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify(e), { status: 500 });
+  }
+});
+
+router.get("/metrics/paid_clicks", async (request, env: Env) => {
+  try {
+    const { results } = await env.DB.prepare("SELECT * FROM paid_clicks").all();
+    return new Response(renderHtml(JSON.stringify({ results }, null, 2)), {
+      headers: {
+        "content-type": "text/html",
+      },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify(e), { status: 500 });
+  }
+});
+
+router.get("/metrics/last_scenes", async (request, env: Env) => {
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT * FROM reached_last_scene",
+    ).all();
+    return new Response(renderHtml(JSON.stringify({ results }, null, 2)), {
+      headers: {
+        "content-type": "text/html",
+      },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify(e), { status: 500 });
+  }
+});
+
 export default {
   async fetch(
     request: IRequest,
