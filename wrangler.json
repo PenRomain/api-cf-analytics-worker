@@ -2,6 +2,7 @@
   "compatibility_date": "2025-06-27",
   "main": "src/index.ts",
   "name": "cf-analytics-worker",
+  "type": "webpack",
   "upload_source_maps": true,
   "d1_databases": [
     {
@@ -10,11 +11,14 @@
       "database_name": "analytics_db"
     }
   ],
+  "build": {
+    "command": "npm run build"
+  },
   "site": {
     "bucket": "./dist",
+    "entry-point": "workers_site",
     "include": [
-      "index.html",
-      "src/**/*"
+      "index.html"
     ]
   },
   "observability": {
