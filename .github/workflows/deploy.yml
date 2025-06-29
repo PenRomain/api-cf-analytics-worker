@@ -65,7 +65,7 @@ jobs:
       - name: Build Worker
         run: npm run build:worker
       - name: Upload dist artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
