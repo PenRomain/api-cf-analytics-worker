@@ -13,7 +13,7 @@ const corsHeaders = {
 
 router.options("*", () => new Response(null, { headers: corsHeaders }));
 
-router.post("/events/users", async (request: IRequest, env: Env) => {
+router.post("/events/user", async (request: IRequest, env: Env) => {
   try {
     const { userId, ts } = await request.json();
     if (!userId || !ts)
@@ -90,6 +90,26 @@ router.get("/", async (request, env: Env) => {
     );
   } catch (e) {
     return new Response(JSON.stringify(e), { status: 500 });
+  }
+});
+
+router.get("/metrics/users/:userId", async (request, env: Env) => {
+  const { userId } = request.params;
+
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT COUNT(1) AS cnt FROM new_users WHERE user_id = ?",
+    )
+      .bind(userId)
+      .all();
+    const exists = (results[0].cnt as number) > 0;
+    if (exists) {
+      return new Response(null, { status: 200 });
+    } else {
+      return new Response(null, { status: 404 });
+    }
+  } catch (e) {
+    return new Response("Internal Server Error", { status: 500 });
   }
 });
 
