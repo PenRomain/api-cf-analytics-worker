@@ -24,7 +24,7 @@
   },
   "kv_namespaces": [
   {
-    "binding": "__cf-analytics-worker-workers_sites_assets", 
+    "binding": "ASSET_NAMESPACE", 
     "id": "de5cd9e5102a4c50942ea52380bc2d3e"
   }
 ]
