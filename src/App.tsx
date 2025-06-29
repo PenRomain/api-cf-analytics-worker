@@ -17,7 +17,7 @@ interface Metrics {
 export default function App() {
   const [data, setData] = useState<Metrics[]>([]);
   const [loading, setLoading] = useState(false);
-  const [metric, setMetric] = useState<"users" | "paid_clicks" | "last_scene">(
+  const [metric, setMetric] = useState<"users" | "paid_clicks" | "last_scenes">(
     "users",
   );
 
@@ -53,8 +53,8 @@ export default function App() {
         </button>
         <button
           onClick={() => {
-            setMetric("last_scene");
-            fetchMetric("last_scene");
+            setMetric("last_scenes");
+            fetchMetric("last_scenes");
           }}
         >
           Последняя сцена

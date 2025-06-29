@@ -66,30 +66,6 @@ router.post("/events/last-scene", async (request: IRequest, env: Env) => {
   }
 });
 
-router.get("/", async (request, env: Env) => {
-  try {
-    const { results: newUsers } = await env.DB.prepare(
-      "SELECT COUNT(*) AS count FROM new_users",
-    ).all();
-    const { results: paidClicks } = await env.DB.prepare(
-      "SELECT COUNT(*) AS count FROM paid_clicks",
-    ).all();
-    const { results: reachedLastScene } = await env.DB.prepare(
-      "SELECT COUNT(*) AS count FROM reached_last_scene",
-    ).all();
-    return new Response(
-      JSON.stringify({ newUsers, paidClicks, reachedLastScene }, null, 2),
-      {
-        headers: {
-          "content-type": "text/html",
-        },
-      },
-    );
-  } catch (e) {
-    return new Response(JSON.stringify(e), { status: 500 });
-  }
-});
-
 router.get("/metrics/users/:userId", async (request, env: Env) => {
   const { userId } = request.params;
 
@@ -167,10 +143,32 @@ router.get("/metrics/last_scenes", async (request, env: Env) => {
 
 export default {
   async fetch(
-    request: IRequest,
+    request: Request,
     env: Env,
     ctx: ExecutionContext,
   ): Promise<Response> {
-    return router.handle(request, env, ctx);
+    const url = new URL(request.url);
+    if (
+      url.pathname.startsWith("/events") ||
+      url.pathname.startsWith("/metrics")
+    ) {
+      return router.handle(request, env, ctx);
+    }
+    try {
+      // @ts-ignore
+      return await getAssetFromKV({ request, env, ctx });
+    } catch (e) {
+      return new Response("Not found", { status: 404 });
+    }
   },
 };
+
+// export default {
+//   async fetch(
+//     request: IRequest,
+//     env: Env,
+//     ctx: ExecutionContext,
+//   ): Promise<Response> {
+//     return router.handle(request, env, ctx);
+//   },
+// };
