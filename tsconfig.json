@@ -1,13 +1,13 @@
 {
     "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
     "lib": ["WebWorker", "esnext"],
+    "moduleResolution": "node",
     "strict": true,
     "esModuleInterop": true,
     "types": ["./worker-configuration.d.ts"],
     "outDir": "dist",
-    "target": "esnext",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
     "noEmit": true,
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
