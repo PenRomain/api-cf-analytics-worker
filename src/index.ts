@@ -202,16 +202,17 @@ export default {
     try {
       return await getAssetFromKV(
         { request, waitUntil: ctx.waitUntil },
-        { ASSET_NAMESPACE: env["__cf-analytics-worker-workers_sites_assets"] },
+        { ASSET_NAMESPACE: env["ASSET_NAMESPACE"] },
       );
     } catch {
       const indexReq = new Request(
         new URL("/index.html", request.url).href,
         request,
       );
+
       return await getAssetFromKV(
         { request: indexReq, waitUntil: ctx.waitUntil },
-        { ASSET_NAMESPACE: env["__cf-analytics-worker-workers_sites_assets"] },
+        { ASSET_NAMESPACE: env["ASSET_NAMESPACE"] },
       );
     }
   },
