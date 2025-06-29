@@ -1,6 +1,5 @@
 import { IRequest, Router } from "itty-router";
-import type { Env } from "./types";
-import { ExecutionContext } from "@cloudflare/workers-types";
+import { renderHtml } from "./renderHtml";
 
 const router = Router();
 
@@ -20,7 +19,7 @@ router.post("/events/users", async (request: IRequest, env: Env) => {
         status: 400,
         headers: corsHeaders,
       });
-    const stmt = env.ANALYTICS_DB.prepare(
+    const stmt = env.DB.prepare(
       "INSERT OR IGNORE INTO new_users (user_id, ts) VALUES (?, ?)",
     );
     await stmt.bind(userId, ts).run();
@@ -38,7 +37,7 @@ router.post("/events/paid-clicks", async (request: IRequest, env: Env) => {
         status: 400,
         headers: corsHeaders,
       });
-    const stmt = env.ANALYTICS_DB.prepare(
+    const stmt = env.DB.prepare(
       "INSERT INTO paid_clicks (user_id, ts) VALUES (?, ?)",
     );
     await stmt.bind(userId, ts).run();
@@ -56,7 +55,7 @@ router.post("/events/last-scene", async (request: IRequest, env: Env) => {
         status: 400,
         headers: corsHeaders,
       });
-    const stmt = env.ANALYTICS_DB.prepare(
+    const stmt = env.DB.prepare(
       "INSERT OR IGNORE INTO reached_last_scene (user_id, ts) VALUES (?, ?)",
     );
     await stmt.bind(userId, ts).run();
@@ -66,17 +65,23 @@ router.post("/events/last-scene", async (request: IRequest, env: Env) => {
   }
 });
 
-router.get("/metrics/users", async (request: IRequest, env: Env) => {
-  const { results } = await env.ANALYTICS_DB.prepare(
-    "SELECT COUNT(*) AS count FROM new_users",
-  ).all();
-  return new Response(JSON.stringify({ users: results[0].count }), {
-    headers: { "Content-Type": "application/json", ...corsHeaders },
-  });
+router.get("/metrics/users", async (request, env: Env) => {
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT COUNT(*) AS count FROM new_users",
+    ).all();
+    return new Response(renderHtml(JSON.stringify(results, null, 2)), {
+      headers: {
+        "content-type": "text/html",
+      },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify(e), { status: 500 });
+  }
 });
 
 router.get("/metrics/paid-clicks", async (request: IRequest, env: Env) => {
-  const { results } = await env.ANALYTICS_DB.prepare(
+  const { results } = await env.DB.prepare(
     "SELECT COUNT(*) AS count FROM paid_clicks",
   ).all();
   return new Response(JSON.stringify({ paidClicks: results[0].count }), {
@@ -85,7 +90,7 @@ router.get("/metrics/paid-clicks", async (request: IRequest, env: Env) => {
 });
 
 router.get("/metrics/last-scene", async (request: IRequest, env: Env) => {
-  const { results } = await env.ANALYTICS_DB.prepare(
+  const { results } = await env.DB.prepare(
     "SELECT COUNT(*) AS count FROM reached_last_scene",
   ).all();
   return new Response(JSON.stringify({ lastSceneUsers: results[0].count }), {
@@ -102,3 +107,20 @@ export default {
     return router.handle(request, env, ctx);
   },
 };
+
+// import { ExportedHandler } from "@cloudflare/workers-types";
+// import { Env } from "./types";
+// import { renderHtml } from "./renderHtml";
+
+// export default {
+//   async fetch(request, env) {
+//     const stmt = env.DB.prepare("SELECT * FROM comments LIMIT 3");
+//     const { results } = await stmt.all();
+
+//     return new Response(renderHtml(JSON.stringify(results, null, 2)), {
+//       headers: {
+//         "content-type": "text/html",
+//       },
+//     });
+//   },
+// } satisfies ExportedHandler<Env>;
