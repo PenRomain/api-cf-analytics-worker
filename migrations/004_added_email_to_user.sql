@@ -1,0 +1,2 @@
+ALTER TABLE new_users
+  ADD COLUMN email TEXT UNIQUE;

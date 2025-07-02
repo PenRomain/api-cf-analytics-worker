@@ -67,6 +67,40 @@ router.post("/events/last-scene", async (request: IRequest, env: Env) => {
   }
 });
 
+router.post("/events/update-user", async (request: IRequest, env: Env) => {
+  try {
+    const { userId, email } = await request.json();
+
+    if (!userId || !email) {
+      return new Response("Invalid payload: userId and email are required", {
+        status: 400,
+        headers: corsHeaders,
+      });
+    }
+
+    const result = await env.DB.prepare(
+      `UPDATE new_users
+         SET email = ?
+       WHERE user_id = ?`,
+    )
+      .bind(email, userId)
+      .run();
+
+    const changes = result.meta?.changes ?? 0;
+    if (changes === 0) {
+      return new Response("User not found", {
+        status: 404,
+        headers: corsHeaders,
+      });
+    }
+
+    return new Response("OK", { headers: corsHeaders });
+  } catch (err) {
+    console.error("update-user error:", err);
+    return new Response("Error", { status: 500, headers: corsHeaders });
+  }
+});
+
 router.get("/metrics/users/:userId", async (request, env: Env) => {
   const { userId } = request.params;
 
