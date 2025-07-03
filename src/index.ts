@@ -15,8 +15,8 @@ router.options("*", () => new Response(null, { headers: corsHeaders }));
 
 router.post("/events/user", async (request: IRequest, env: Env) => {
   try {
-    const { userId, ts } = await request.json();
-    if (!userId || !ts)
+    const { userId: user_id, ts } = await request.json();
+    if (!user_id || !ts)
       return new Response("Invalid payload", {
         status: 400,
         headers: corsHeaders,
@@ -24,7 +24,7 @@ router.post("/events/user", async (request: IRequest, env: Env) => {
     const stmt = env.DB.prepare(
       "INSERT OR IGNORE INTO new_users (user_id, ts) VALUES (?, ?)",
     );
-    await stmt.bind(userId, ts).run();
+    await stmt.bind(user_id, ts).run();
     return new Response("OK", { headers: corsHeaders });
   } catch {
     return new Response("Error", { status: 500, headers: corsHeaders });
@@ -33,8 +33,8 @@ router.post("/events/user", async (request: IRequest, env: Env) => {
 
 router.post("/events/paid-click", async (request: IRequest, env: Env) => {
   try {
-    const { userId, ts } = await request.json();
-    if (!userId || !ts)
+    const { userId: user_id, ts } = await request.json();
+    if (!user_id || !ts)
       return new Response("Invalid payload", {
         status: 400,
         headers: corsHeaders,
@@ -42,7 +42,7 @@ router.post("/events/paid-click", async (request: IRequest, env: Env) => {
     const stmt = env.DB.prepare(
       "INSERT INTO paid_clicks (user_id, ts) VALUES (?, ?)",
     );
-    await stmt.bind(userId, ts).run();
+    await stmt.bind(user_id, ts).run();
     return new Response("OK", { headers: corsHeaders });
   } catch {
     return new Response("Error", { status: 500, headers: corsHeaders });
@@ -51,8 +51,8 @@ router.post("/events/paid-click", async (request: IRequest, env: Env) => {
 
 router.post("/events/last-scene", async (request: IRequest, env: Env) => {
   try {
-    const { userId, ts } = await request.json();
-    if (!userId || !ts)
+    const { userId: user_id, ts } = await request.json();
+    if (!user_id || !ts)
       return new Response("Invalid payload", {
         status: 400,
         headers: corsHeaders,
@@ -60,7 +60,7 @@ router.post("/events/last-scene", async (request: IRequest, env: Env) => {
     const stmt = env.DB.prepare(
       "INSERT OR IGNORE INTO reached_last_scene (user_id, ts) VALUES (?, ?)",
     );
-    await stmt.bind(userId, ts).run();
+    await stmt.bind(user_id, ts).run();
     return new Response("OK", { headers: corsHeaders });
   } catch {
     return new Response("Error", { status: 500, headers: corsHeaders });
@@ -69,21 +69,20 @@ router.post("/events/last-scene", async (request: IRequest, env: Env) => {
 
 router.post("/events/update-user", async (request: IRequest, env: Env) => {
   try {
-    const { userId, email } = await request.json();
+    const { userId: user_id, email } = await request.json();
 
-    if (!userId || !email) {
+    if (!user_id || !email) {
       return new Response("Invalid payload: userId and email are required", {
         status: 400,
         headers: corsHeaders,
       });
     }
-
     const result = await env.DB.prepare(
       `UPDATE new_users
          SET email = ?
        WHERE user_id = ?`,
     )
-      .bind(email, userId)
+      .bind(email, user_id)
       .run();
 
     const changes = result.meta?.changes ?? 0;
@@ -102,13 +101,13 @@ router.post("/events/update-user", async (request: IRequest, env: Env) => {
 });
 
 router.get("/metrics/users/:userId", async (request, env: Env) => {
-  const { userId } = request.params;
+  const { userId: user_id } = request.params;
 
   try {
     const { results } = await env.DB.prepare(
       "SELECT COUNT(1) AS cnt FROM new_users WHERE user_id = ?",
     )
-      .bind(userId)
+      .bind(user_id)
       .all();
     const exists = (results[0].cnt as number) > 0;
     if (exists) {

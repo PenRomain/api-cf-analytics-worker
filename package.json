@@ -6,7 +6,7 @@
         "build": "tsc -p tsconfig.json",
         "dev": "wrangler dev",
         "predeploy": "wrangler d1 migrations apply analytics_db",
-        "seedLocalD1": "wrangler d1 migrations apply analytics_db --local",
+        "seedLocalD1": "wrangler d1 migrations apply analytics_db --remote",
         "check": "tsc && wrangler deploy --dry-run",
         "deploy": "npm run predeploy && wrangler deploy",
         "format": "prettier -w \"src/**/*.{ts,tsx,css,md,json}\""
